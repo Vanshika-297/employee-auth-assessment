@@ -1,0 +1,26 @@
+{
+  "name": "employee-auth-assessment",
+  "version": "1.0.0",
+  "description": "Full-Stack Developer Practical Assessment - React.js + Node.js Authentication System",
+  "private": true,
+  "scripts": {
+    "server": "npm --prefix server start",
+    "server:dev": "npm --prefix server run dev",
+    "server:test": "npm --prefix server test",
+    "client": "npm --prefix client run dev",
+    "client:build": "npm --prefix client run build",
+    "client:test": "npm --prefix client test",
+    "test": "npm run server:test && npm run client:test"
+  },
+  "keywords": [
+    "react",
+    "node",
+    "express",
+    "mongodb",
+    "jwt",
+    "http-only-cookie",
+    "vitest"
+  ],
+  "author": "Full-Stack Candidate",
+  "license": "ISC"
+}

@@ -1,0 +1,270 @@
+{
+  "info": {
+    "_postman_id": "9b12a865-c34b-4f9e-91c2-1234567890ab",
+    "name": "Employee Authentication API - Practical Assessment",
+    "description": "Comprehensive Postman Collection for testing Employee Authentication MERN application endpoints with HTTP-only cookies and JWT.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication - Success Flow",
+      "item": [
+        {
+          "name": "1.1 Register User (Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice Johnson\",\n  \"email\": \"alice.johnson@example.com\",\n  \"password\": \"Secret123!\",\n  \"confirmPassword\": \"Secret123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Registers a new user account. Expects 201 Created and user details without password."
+          },
+          "response": [
+            {
+              "name": "201 Created Response",
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"User registered successfully. Please login to continue.\",\n  \"user\": {\n    \"id\": \"65df1234567890abcdef1234\",\n    \"name\": \"Alice Johnson\",\n    \"email\": \"alice.johnson@example.com\",\n    \"role\": \"user\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "1.2 Login User (Success)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice.johnson@example.com\",\n  \"password\": \"Secret123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Authenticates user credentials. Expects 200 OK, user details, and sets an HTTP-only 'token' cookie."
+          },
+          "response": [
+            {
+              "name": "200 OK Response",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login successful.\",\n  \"user\": {\n    \"id\": \"65df1234567890abcdef1234\",\n    \"name\": \"Alice Johnson\",\n    \"email\": \"alice.johnson@example.com\",\n    \"role\": \"user\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "1.3 Get Current User Profile (Success - Protected)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Retrieves the authenticated user's profile using the HTTP-only cookie automatically saved by Postman from step 1.2. Expects 200 OK."
+          },
+          "response": [
+            {
+              "name": "200 OK Response",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"user\": {\n    \"id\": \"65df1234567890abcdef1234\",\n    \"name\": \"Alice Johnson\",\n    \"email\": \"alice.johnson@example.com\",\n    \"role\": \"user\",\n    \"createdAt\": \"2026-10-30T10:00:00.000Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "1.4 Logout User (Success)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Clears the authentication HTTP-only cookie. Expects 200 OK."
+          },
+          "response": [
+            {
+              "name": "200 OK Response",
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": true,\n  \"message\": \"Logged out successfully.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "1.5 Get Current User After Logout (Unauthorized)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Verifies that after logout, access to /api/auth/me is blocked. Expects 401 Unauthorized."
+          },
+          "response": [
+            {
+              "name": "401 Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"message\": \"Access denied. No authentication token provided.\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Validation & Security Negative Tests",
+      "item": [
+        {
+          "name": "2.1 Register - Duplicate Email (409 Conflict)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice Duplicate\",\n  \"email\": \"alice.johnson@example.com\",\n  \"password\": \"Secret123!\",\n  \"confirmPassword\": \"Secret123!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Attempts registration with an email that already exists. Expects 409 Conflict."
+          },
+          "response": [
+            {
+              "name": "409 Conflict Response",
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"message\": \"An account with this email already exists. Please login instead.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "2.2 Register - Invalid Input (Missing Fields / Short Password / Mismatch)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"email\": \"bad-email\",\n  \"password\": \"123\",\n  \"confirmPassword\": \"456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Validation check with invalid data. Expects 400 Bad Request."
+          },
+          "response": [
+            {
+              "name": "400 Bad Request Response",
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"message\": \"All fields (name, email, password, confirmPassword) are required.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "2.3 Login - Incorrect Password (401 Unauthorized)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"alice.johnson@example.com\",\n  \"password\": \"WrongPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Attempts login with wrong password. Expects 401 Unauthorized."
+          },
+          "response": [
+            {
+              "name": "401 Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"message\": \"Invalid email or password.\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "2.4 Unauthorized Access Without Token (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "Direct access to protected route without authentication cookie. Expects 401 Unauthorized."
+          },
+          "response": [
+            {
+              "name": "401 Unauthorized Response",
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"success\": false,\n  \"message\": \"Access denied. No authentication token provided.\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
